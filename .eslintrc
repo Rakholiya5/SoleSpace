@@ -1,0 +1,23 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended"],
+    "ignorePatterns": ["/services/response.ts"],
+    "rules": {
+        "no-console": "error",
+        "no-underscore-dangle": 0,
+        "no-param-reassign": 0,
+        "func-names": 0,
+        "new-cap": 0,
+        "max-len": ["error", 140],
+        "comma-dangle": 0,
+        "padded-blocks": 0,
+        "no-nested-ternary": "off",
+        "no-plusplus": 0,
+        "no-duplicate-imports": "error",
+        "no-self-compare": "error",
+        "eqeqeq": "error",
+        "object-shorthand": "error"
+    }
+}

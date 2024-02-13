@@ -1,0 +1,22 @@
+{
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs",
+        },
+    },
+
+    "compilerOptions": {
+        "skipLibCheck": true,
+        "target": "es6",
+        "strict": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "outDir": "./build",
+        "allowJs": true,
+        "rootDir": "./",
+    },
+    "include": ["./**/*"],
+    "exclude": ["node_modules", "./build/**/*", "./public/**/*"],
+}
