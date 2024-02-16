@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { AdminAuthenticatedRequest, UserAuthenticatedRequest } from '../utils/interfaces';
 import { messages } from '../utils/constants';
 import { Users } from '../db/models/users';
+import { config } from '../services/config';
 
 export const verifyAdmin = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     const unauthorizedResponse = { message: messages.UNAUTHORIZED, success: false };
@@ -14,7 +15,7 @@ export const verifyAdmin = async (req: AdminAuthenticatedRequest, res: Response,
             return res.status(401).json(unauthorizedResponse);
         }
 
-        const secret = process.env.JWT_SECRET || 'secret';
+        const secret = config.jwtSecret;
 
         const decoded = jwt.verify(token, secret) as { user_id: string; sequence: number };
         const admin = await Admin.findById(decoded.user_id);
@@ -39,7 +40,7 @@ export const verifyUser = async (req: UserAuthenticatedRequest, res: Response, n
             return res.status(401).json(unauthorizedResponse);
         }
 
-        const secret = process.env.JWT_SECRET || 'secret';
+        const secret = config.jwtSecret;
 
         const decoded = jwt.verify(token, secret) as { user_id: string; sequence: number };
         const user = await Users.findById(decoded.user_id);

@@ -3,7 +3,7 @@ import { changePassword, getUser, loginUser, signUpUser, updateUser } from '../c
 import { verifyUser } from '../middlewares/auth';
 import { validate } from '../utils/helper';
 import { changeUserPasswordValidation, loginUserValidation, signUpUserValidation, updateUserValidation } from '../validations/users';
-import { getShoes } from '../controllers/shoes';
+import { getShoe, getShoes } from '../controllers/shoes';
 
 const usersRouter = Router();
 
@@ -20,5 +20,7 @@ usersRouter.put('/change-password', validate(changeUserPasswordValidation), chan
 usersRouter.put('/update', validate(updateUserValidation), updateUser);
 
 usersRouter.get('/shoes', getShoes);
+
+usersRouter.get('/shoes/:id', getShoe);
 
 export default usersRouter;

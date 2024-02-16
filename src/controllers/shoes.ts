@@ -23,11 +23,13 @@ export const getShoes = async (req: AdminAuthenticatedRequest, res: Response, ne
         const skip: number = Math.abs(parseInt(req?.query?.skip?.toString() || '0'));
         const search: string = req?.query?.search?.toString() || '';
 
-        const shoes = await Shoes.find({ name: { $regex: search, $options: 'i' }, brand: { $regex: search, $options: 'i' } })
-            .limit(limit)
-            .skip(skip);
+        const query = { name: { $regex: search, $options: 'i' }, brand: { $regex: search, $options: 'i' } };
 
-        return res.status(200).json({ shoes, success: true });
+        const shoes = await Shoes.find(query).limit(limit).skip(skip);
+
+        const total = await Shoes.countDocuments(query);
+
+        return res.status(200).json({ shoes, success: true, total });
     } catch (error) {
         return next(error);
     }
@@ -128,6 +130,8 @@ export const updateShoeDetails = async (req: AdminAuthenticatedRequest, res: Res
 
         if (!details) throw new Error(messages.DETAILS_NOT_FOUND);
 
+        const images: string[] = [];
+
         if (files?.length && Array.isArray(files)) {
             const folderPath = `public/shoes/${id}`;
 
@@ -136,13 +140,14 @@ export const updateShoeDetails = async (req: AdminAuthenticatedRequest, res: Res
             for (const file of files) {
                 const fileName = `${Date.now()}${path.extname(file.originalname)}`;
                 fs.writeFileSync(`${folderPath}/${fileName}`, file.buffer);
-                details.images.push(`${id}/${fileName}`);
+                images.push(`${id}/${fileName}`);
             }
         }
 
         details.color = color;
         details.size = size;
         details.quantity = quantity;
+        details.images = [...new Set([...details.images, ...images])];
 
         await shoe.save();
 

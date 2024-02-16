@@ -3,9 +3,10 @@ import { mongoConnect } from './src/db/';
 import { customErrorRes } from './src/services/response';
 import routes from './src/routes';
 import cors from 'cors';
+import { config } from './src/services/config';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = config.port;
 
 app.use(cors());
 app.use(express.json());
