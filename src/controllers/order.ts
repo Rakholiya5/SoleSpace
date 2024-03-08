@@ -33,6 +33,10 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
 
             if (details.quantity < item.quantity) throw new Error(messages.INSUFFICIENT_QUANTITY);
 
+            details.quantity -= item.quantity;
+
+            await shoe.save();
+
             total += shoe.price * item.quantity;
         }
 
@@ -65,7 +69,11 @@ const getOrders = async (skip: number, limit: number, filter: FilterQuery<IOrder
     const data = [];
 
     for (const order of orders) {
-        const cartItems = await Cart.find({ userId, orderId: order._id });
+        const cartItems = await Cart.find({ userId: order.userId, orderId: order._id });
+
+        const user = await Users.findById(order.userId);
+
+        if (!user) throw new Error(messages.USER_NOT_FOUND);
 
         const items = [];
 
@@ -91,7 +99,7 @@ const getOrders = async (skip: number, limit: number, filter: FilterQuery<IOrder
             });
         }
 
-        data.push({ ...order.toObject(), items });
+        data.push({ ...order.toObject(), items, user });
     }
 
     return data;
