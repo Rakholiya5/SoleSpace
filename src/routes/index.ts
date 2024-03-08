@@ -3,8 +3,8 @@ import adminRouter from './admin';
 import shoesRouter from './shoes';
 import { verifyAdmin } from '../middlewares/auth';
 import usersRouter from './users';
-import cartRouter from './cart';
-import orderRouter from './order';
+import { adminCartRouter, userCartRouter } from './cart';
+import { adminOrderRouter, userOrderRouter } from './order';
 
 const routes = Router();
 
@@ -14,8 +14,12 @@ routes.use('/shoes', verifyAdmin, shoesRouter);
 
 routes.use('/users', usersRouter);
 
-routes.use('/cart', cartRouter);
+routes.use('/admin-cart', adminCartRouter);
 
-routes.use('/orders', orderRouter);
+routes.use('/users-cart', userCartRouter);
+
+routes.use('/admin-orders', adminOrderRouter);
+
+routes.use('/users-orders', userOrderRouter);
 
 export default routes;

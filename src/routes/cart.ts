@@ -18,4 +18,4 @@ const adminCartRouter = Router();
 
 adminCartRouter.use(verifyAdmin);
 
-export default [userCartRouter, adminCartRouter];
+export { userCartRouter, adminCartRouter };

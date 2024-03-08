@@ -9,6 +9,7 @@ export const setEmailType = (value: string) => value.toLowerCase().trim();
 export interface AdminInterface {
     email: string;
     password: string;
+    isTempPassword?: boolean;
 }
 
 export interface IAdmin extends Document, AdminInterface {
@@ -21,6 +22,7 @@ const adminSchema = new Schema<IAdmin>(
         email: { type: String, required: true, unique: true, set: setEmailType },
         password: { type: String, required: true },
         sequence: { type: Number, default: 0 },
+        isTempPassword: { type: Boolean, default: false, required: true },
     },
     { timestamps: true }
 );

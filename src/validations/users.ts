@@ -26,3 +26,9 @@ export const updateUserValidation = {
         phone,
     }),
 };
+
+export const forgotPasswordValidation = {
+    [Segments.BODY]: Joi.object().keys({
+        email,
+    }),
+};

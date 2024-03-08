@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { Users, usersInterface } from '../db/models/users';
 import { messages } from '../utils/constants';
 import { UserAuthenticatedRequest } from '../utils/interfaces';
-import { getJwtToken } from '../utils/helper';
+import { generateTempPassword, getJwtToken } from '../utils/helper';
+import { sendTempPasswordEmail } from '../services/mail';
 
 export const signUpUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -68,6 +69,7 @@ export const changePassword = async (req: UserAuthenticatedRequest, res: Respons
 
         user.password = newPassword;
         user.sequence += 1;
+        user.isTempPassword = false;
 
         await user.save();
 
@@ -92,6 +94,30 @@ export const updateUser = async (req: UserAuthenticatedRequest, res: Response, n
         await user.save();
 
         return res.status(200).json({ user, success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email }: { email: string } = req.body;
+
+        const user = await Users.findOne({ email });
+
+        if (!user) throw new Error(messages.USER_NOT_FOUND);
+
+        const tempPassword = generateTempPassword();
+
+        await sendTempPasswordEmail(email, tempPassword);
+
+        user.password = tempPassword;
+        user.sequence += 1;
+        user.isTempPassword = true;
+
+        await user.save();
+
+        return res.status(200).json({ success: true });
     } catch (error) {
         return next(error);
     }

@@ -1,8 +1,14 @@
 import { Router } from 'express';
-import { changePassword, getUser, loginUser, signUpUser, updateUser } from '../controllers/users';
+import { changePassword, forgotPassword, getUser, loginUser, signUpUser, updateUser } from '../controllers/users';
 import { verifyUser } from '../middlewares/auth';
 import { validate } from '../utils/helper';
-import { changeUserPasswordValidation, loginUserValidation, signUpUserValidation, updateUserValidation } from '../validations/users';
+import {
+    changeUserPasswordValidation,
+    forgotPasswordValidation,
+    loginUserValidation,
+    signUpUserValidation,
+    updateUserValidation,
+} from '../validations/users';
 import { getShoe, getShoes } from '../controllers/shoes';
 
 const usersRouter = Router();
@@ -10,6 +16,8 @@ const usersRouter = Router();
 usersRouter.post('/signup', validate(signUpUserValidation), signUpUser);
 
 usersRouter.post('/login', validate(loginUserValidation), loginUser);
+
+usersRouter.get('/forgot-password', validate(forgotPasswordValidation), forgotPassword);
 
 usersRouter.use(verifyUser);
 

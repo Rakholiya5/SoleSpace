@@ -51,7 +51,7 @@ export const getMyCartsItems = async (req: UserAuthenticatedRequest, res: Respon
 
         if (!user) throw new Error(messages.USER_NOT_FOUND);
 
-        const data = await Cart.find({ userId: user._id });
+        const data = await Cart.find({ userId: user._id, orderId: null });
 
         const cartItems = [];
 
@@ -63,8 +63,7 @@ export const getMyCartsItems = async (req: UserAuthenticatedRequest, res: Respon
 
                 if (details) {
                     cartItems.push({
-                        _id: item._id,
-                        quantity: item.quantity,
+                        ...item.toJSON(),
                         shoe: {
                             _id: shoe._id,
                             name: shoe.name,

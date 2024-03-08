@@ -10,6 +10,7 @@ export interface usersInterface {
     age: number;
     address: string;
     phone: string;
+    isTempPassword?: boolean;
 }
 
 export interface IUsers extends Document, usersInterface {
@@ -26,6 +27,7 @@ const usersSchema = new Schema<IUsers>(
         address: { type: String, required: true, set: setStringType },
         phone: { type: String, required: true, set: setStringType },
         sequence: { type: Number, default: 0 },
+        isTempPassword: { type: Boolean, default: false, required: true },
     },
     { timestamps: true }
 );

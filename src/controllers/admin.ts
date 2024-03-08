@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { Admin, AdminInterface } from '../db/models/admin';
-import { getJwtToken } from '../utils/helper';
+import { generateTempPassword, getJwtToken } from '../utils/helper';
 import { AdminAuthenticatedRequest } from '../utils/interfaces';
 import { messages } from '../utils/constants';
+import { sendTempPasswordEmail } from '../services/mail';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -70,12 +71,37 @@ export const changePassword = async (req: AdminAuthenticatedRequest, res: Respon
 
         admin.password = newPassword;
         admin.sequence += 1;
+        admin.isTempPassword = false;
 
         await admin.save();
 
         const token = getJwtToken(admin._id, admin.sequence);
 
         return res.status(200).json({ admin, token, success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email }: { email: string } = req.body;
+
+        const admin = await Admin.findOne({ email });
+
+        if (!admin) throw new Error(messages.ADMIN_NOT_FOUND);
+
+        const tempPassword = generateTempPassword();
+
+        await sendTempPasswordEmail(email, tempPassword);
+
+        admin.password = tempPassword;
+        admin.isTempPassword = true;
+        admin.sequence += 1;
+
+        await admin.save();
+
+        return res.status(200).json({ success: true });
     } catch (error) {
         return next(error);
     }

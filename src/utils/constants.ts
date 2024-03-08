@@ -14,6 +14,7 @@ export const messages = <const>{
     INSUFFICIENT_QUANTITY: 'Insufficient quantity',
     CART_ITEM_NOT_FOUND: 'Cart item not found',
     CART_EMPTY: 'Cart is empty',
+    ORDER_NOT_FOUND: 'Order not found',
 };
 
 export const PASSWORD_SALT_ROUNDS = 10;
@@ -22,7 +23,14 @@ export enum OrderStatus {
     PENDING = 'PENDING',
     COMPLETED = 'COMPLETED',
     CANCELLED = 'CANCELLED',
+    REJECTED = 'REJECTED',
 }
+
+export const commonOrderStatuses = <const>[OrderStatus.PENDING, OrderStatus.COMPLETED];
+
+export const adminOrderStatuses = <const>[...commonOrderStatuses, OrderStatus.REJECTED];
+
+export const userOrderStatuses = <const>[...commonOrderStatuses, OrderStatus.CANCELLED];
 
 export enum PaymentMethod {
     CASH_ON_DELIVERY = 'CASH_ON_DELIVERY',
