@@ -11,6 +11,19 @@ export const messages = <const>{
     USER_EXISTS: 'User already exists',
     DETAILS_NOT_FOUND: 'Details not found',
     IMAGE_REQUIRED: 'Image is required',
+    INSUFFICIENT_QUANTITY: 'Insufficient quantity',
+    CART_ITEM_NOT_FOUND: 'Cart item not found',
+    CART_EMPTY: 'Cart is empty',
 };
 
 export const PASSWORD_SALT_ROUNDS = 10;
+
+export enum OrderStatus {
+    PENDING = 'PENDING',
+    COMPLETED = 'COMPLETED',
+    CANCELLED = 'CANCELLED',
+}
+
+export enum PaymentMethod {
+    CASH_ON_DELIVERY = 'CASH_ON_DELIVERY',
+}
