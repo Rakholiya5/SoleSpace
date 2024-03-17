@@ -17,7 +17,7 @@ usersRouter.post('/signup', validate(signUpUserValidation), signUpUser);
 
 usersRouter.post('/login', validate(loginUserValidation), loginUser);
 
-usersRouter.get('/forgot-password', validate(forgotPasswordValidation), forgotPassword);
+usersRouter.post('/forgot-password', validate(forgotPasswordValidation), forgotPassword);
 
 usersRouter.use(verifyUser);
 

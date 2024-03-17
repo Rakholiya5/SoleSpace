@@ -1,6 +1,6 @@
 import { Joi } from 'celebrate';
 
-export const stringRequired = Joi.string().required();
+export const stringRequired = Joi.string().required().trim();
 
 export const password = stringRequired.min(8).max(20);
 

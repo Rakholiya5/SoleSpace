@@ -9,7 +9,7 @@ const adminRouter = Router();
 
 adminRouter.post('/login', validate(loginValidation), login);
 
-adminRouter.get('/forgot-password', validate(forgotPasswordValidation), forgotPassword);
+adminRouter.post('/forgot-password', validate(forgotPasswordValidation), forgotPassword);
 
 adminRouter.use(verifyAdmin);
 

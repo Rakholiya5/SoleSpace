@@ -4,12 +4,17 @@ import { messages } from '../utils/constants';
 import { DetailsInterface, Shoes, ShoesInterface } from '../db/models/shoes';
 import fs from 'fs';
 import path from 'path';
+import { Category } from '../db/models/category';
 
 export const addShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const { name, brand, description, price }: ShoesInterface = req.body;
+        const { name, brand, description, price, categoryId }: ShoesInterface = req.body;
 
-        const shoe = await Shoes.create({ name, brand, description, price, details: [] });
+        const category = await Category.findById(categoryId);
+
+        if (!category) throw new Error(messages.CATEGORY_NOT_FOUND);
+
+        const shoe = await Shoes.create({ name, brand, description, price, categoryId, details: [] });
 
         return res.status(201).json({ shoe, success: true });
     } catch (error) {
@@ -52,13 +57,17 @@ export const getShoe = async (req: AdminAuthenticatedRequest, res: Response, nex
 export const updateShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const { name, brand, description, price }: ShoesInterface = req.body;
+        const { name, brand, description, price, categoryId }: ShoesInterface = req.body;
 
         const shoe = await Shoes.findById(id);
 
         if (!shoe) throw new Error(messages.SHOE_NOT_FOUND);
 
-        shoe.set({ name, brand, description, price });
+        const category = await Category.findById(categoryId);
+
+        if (!category) throw new Error(messages.CATEGORY_NOT_FOUND);
+
+        shoe.set({ name, brand, description, price, categoryId });
 
         await shoe.save();
 
@@ -75,6 +84,10 @@ export const deleteShoe = async (req: AdminAuthenticatedRequest, res: Response, 
         const shoe = await Shoes.findByIdAndDelete(id);
 
         if (!shoe) throw new Error(messages.SHOE_NOT_FOUND);
+
+        const folderPath = `public/shoes/${id}`;
+
+        if (fs.existsSync(folderPath)) fs.rmSync(folderPath);
 
         return res.status(200).json({ success: true });
     } catch (error) {
@@ -171,6 +184,11 @@ export const deleteShoeDetails = async (req: AdminAuthenticatedRequest, res: Res
 
         shoe.details = shoe.details.filter((detail) => detail?._id?.toString() !== detailsId);
 
+        for (const image of details.images) {
+            const imagePath = `public/shoes/${shoe.id}/${image}`;
+            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        }
+
         await shoe.save();
 
         return res.status(200).json({ shoe, success: true });
@@ -193,6 +211,11 @@ export const deleteShoeImages = async (req: AdminAuthenticatedRequest, res: Resp
         if (!details) throw new Error(messages.DETAILS_NOT_FOUND);
 
         details.images = details.images.filter((image) => !images.includes(image));
+
+        for (const image of images) {
+            const imagePath = `public/shoes/${shoe.id}/${image}`;
+            if (fs.existsSync(image)) fs.unlinkSync(imagePath);
+        }
 
         await shoe.save();
 

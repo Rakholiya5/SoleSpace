@@ -30,6 +30,7 @@ export interface ShoesInterface {
     price: number;
     brand: string;
     details: DetailsInterface[];
+    categoryId: string;
 }
 
 interface IShoes extends Document, ShoesInterface {}
@@ -41,6 +42,7 @@ const shoesSchema = new Schema<IShoes>(
         price: { type: Number, required: true },
         brand: { type: String, required: true, set: setStringType },
         details: { type: [DetailsSchema], required: true },
+        categoryId: { type: String, ref: 'Category', required: true },
     },
     { timestamps: true, toJSON: { getters: true } }
 );

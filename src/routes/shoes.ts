@@ -21,12 +21,7 @@ import {
     updateShoeDetailsValidation,
     updateShoeValidation,
 } from '../validations/shoes';
-
-import multer from 'multer';
-
-const storage = multer.memoryStorage();
-
-const upload = multer({ storage });
+import { upload } from '../services/multer';
 
 const uploadShoesImages = upload.array('images');
 

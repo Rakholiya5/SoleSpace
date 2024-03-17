@@ -5,6 +5,7 @@ import { verifyAdmin } from '../middlewares/auth';
 import usersRouter from './users';
 import { adminCartRouter, userCartRouter } from './cart';
 import { adminOrderRouter, userOrderRouter } from './order';
+import { adminCategoryRouter } from './category';
 
 const routes = Router();
 
@@ -21,5 +22,7 @@ routes.use('/users-cart', userCartRouter);
 routes.use('/admin-orders', adminOrderRouter);
 
 routes.use('/users-orders', userOrderRouter);
+
+routes.use('/admin-category', adminCategoryRouter);
 
 export default routes;

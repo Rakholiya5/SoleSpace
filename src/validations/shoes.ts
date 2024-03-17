@@ -7,6 +7,7 @@ export const addShoeValidation = {
         brand: stringRequired,
         description: stringRequired,
         price: numberRequired.greater(0),
+        categoryId: stringRequired,
     }),
 };
 
@@ -16,6 +17,7 @@ export const updateShoeValidation = {
         brand: stringRequired,
         description: stringRequired,
         price: numberRequired.greater(0),
+        categoryId: stringRequired,
     }),
     [Segments.PARAMS]: Joi.object().keys({
         id: stringRequired,

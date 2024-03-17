@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express';
 import { AdminAuthenticatedRequest, UserAuthenticatedRequest } from '../utils/interfaces';
-import { OrderStatus, PaymentMethod, adminOrderStatuses, messages, userOrderStatuses } from '../utils/constants';
+import { OrderStatus, PaymentMethod, messages } from '../utils/constants';
 import { Users } from '../db/models/users';
 import { Cart } from '../db/models/cart';
 import { Shoes } from '../db/models/shoes';
@@ -137,26 +137,6 @@ export const getOrdersByAdmin = async (req: AdminAuthenticatedRequest, res: Resp
     }
 };
 
-export const changeOrderStatusUser = async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-        const { orderId, status }: { orderId: string; status: OrderStatus } = req.body;
-
-        const order = await Order.findOne({ _id: orderId, userId: req.user?._id });
-
-        if (!order) throw new Error(messages.ORDER_NOT_FOUND);
-
-        if (order.status !== OrderStatus.PENDING) throw new Error(`You can't change order status to ${status}`);
-
-        order.status = status;
-
-        await order.save();
-
-        return res.status(200).json({ success: true });
-    } catch (error) {
-        return next(error);
-    }
-};
-
 export const changeOrderStatusAdmin = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const { orderId, status }: { orderId: string; status: OrderStatus } = req.body;
@@ -177,17 +157,9 @@ export const changeOrderStatusAdmin = async (req: AdminAuthenticatedRequest, res
     }
 };
 
-export const getOrderStatusesUser = async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-        return res.status(200).json({ data: userOrderStatuses });
-    } catch (error) {
-        return next(error);
-    }
-};
-
 export const getOrderStatusesAdmin = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        return res.status(200).json({ data: adminOrderStatuses });
+        return res.status(200).json({ data: Object.values(OrderStatus) });
     } catch (error) {
         return next(error);
     }

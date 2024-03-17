@@ -1,6 +1,6 @@
 import { Joi, Segments } from 'celebrate';
 import { stringRequired } from './constant';
-import { OrderStatus, PaymentMethod, adminOrderStatuses, userOrderStatuses } from '../utils/constants';
+import { OrderStatus, PaymentMethod } from '../utils/constants';
 
 export const createOrderValidation = {
     [Segments.BODY]: Joi.object().keys({
@@ -20,20 +20,11 @@ export const getOrderValidation = {
     }),
 };
 
-export const changeOrderStatusUserValidation = {
-    [Segments.BODY]: Joi.object().keys({
-        orderId: stringRequired,
-        status: Joi.string()
-            .valid(...userOrderStatuses)
-            .required(),
-    }),
-};
-
 export const changeOrderStatusAdminValidation = {
     [Segments.BODY]: Joi.object().keys({
         orderId: stringRequired,
         status: Joi.string()
-            .valid(...adminOrderStatuses)
+            .valid(...Object.values(OrderStatus))
             .required(),
     }),
 };

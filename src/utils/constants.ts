@@ -15,22 +15,17 @@ export const messages = <const>{
     CART_ITEM_NOT_FOUND: 'Cart item not found',
     CART_EMPTY: 'Cart is empty',
     ORDER_NOT_FOUND: 'Order not found',
+    CATEGORY_NOT_FOUND: 'Category not found',
+    CATEGORY_HAS_SHOES: 'Category has shoes',
 };
 
 export const PASSWORD_SALT_ROUNDS = 10;
 
 export enum OrderStatus {
     PENDING = 'PENDING',
-    COMPLETED = 'COMPLETED',
-    CANCELLED = 'CANCELLED',
-    REJECTED = 'REJECTED',
+    PROCESSING = 'PROCESSING',
+    DELIVERED = 'DELIVERED',
 }
-
-export const commonOrderStatuses = <const>[OrderStatus.PENDING, OrderStatus.COMPLETED];
-
-export const adminOrderStatuses = <const>[...commonOrderStatuses, OrderStatus.REJECTED];
-
-export const userOrderStatuses = <const>[...commonOrderStatuses, OrderStatus.CANCELLED];
 
 export enum PaymentMethod {
     CASH_ON_DELIVERY = 'CASH_ON_DELIVERY',
