@@ -3,7 +3,11 @@ import { Admin, AdminInterface } from '../db/models/admin';
 import { generateTempPassword, getJwtToken } from '../utils/helper';
 import { AdminAuthenticatedRequest } from '../utils/interfaces';
 import { messages } from '../utils/constants';
-import { sendTempPasswordEmail } from '../services/mail';
+import { sendTempPasswordEmail, sendWelcomeEmail } from '../services/mail';
+import { IUsers, Users, usersInterface } from '../db/models/users';
+import { FilterQuery } from 'mongoose';
+import { Order } from '../db/models/order';
+import { Cart } from '../db/models/cart';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -100,6 +104,100 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
         admin.sequence += 1;
 
         await admin.save();
+
+        return res.status(200).json({ success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const addUser = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const { address, age, email, name, password, phone }: usersInterface = req.body;
+
+        const user = await Users.create({ address, age, email, name, password, phone, isTempPassword: true });
+
+        await sendWelcomeEmail(email, password);
+
+        return res.status(200).json({ user, success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const updateUser = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const { address, age, name, phone }: usersInterface = req.body;
+
+        const user = await Users.findById(id);
+
+        if (!user) throw new Error(messages.USER_NOT_FOUND);
+
+        user.address = address;
+        user.age = age;
+        user.name = name;
+        user.phone = phone;
+
+        await user.save();
+
+        return res.status(200).json({ user, success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const getUsers = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const limit: number = Math.abs(parseInt(req?.query?.limit?.toString() || '10'));
+        const skip: number = Math.abs(parseInt(req?.query?.skip?.toString() || '0'));
+        const search: string = req?.query?.search?.toString() || '';
+
+        const query: FilterQuery<IUsers> = {
+            $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
+        };
+
+        const users = await Users.find(query).limit(limit).skip(skip);
+
+        const total = await Users.countDocuments(query);
+
+        return res.status(200).json({ users, success: true, total });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const getUser = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const user = await Users.findById(req.params.id);
+
+        if (!user) throw new Error(messages.USER_NOT_FOUND);
+
+        return res.status(200).json({ user, success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const getRandomPassword = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        return res.status(200).json({ password: generateTempPassword(), success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const deleteUser = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const user = await Users.findById(req.params.id);
+
+        if (!user) throw new Error(messages.USER_NOT_FOUND);
+
+        await Order.deleteMany({ userId: user._id });
+
+        await Cart.deleteMany({ userId: user._id });
+
+        await user.deleteOne();
 
         return res.status(200).json({ success: true });
     } catch (error) {

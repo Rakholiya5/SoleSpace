@@ -11,6 +11,8 @@ export interface usersInterface {
     address: string;
     phone: string;
     isTempPassword?: boolean;
+    isEmailVerified?: boolean;
+    emailVerificationToken: string | null;
 }
 
 export interface IUsers extends Document, usersInterface {
@@ -28,6 +30,8 @@ const usersSchema = new Schema<IUsers>(
         phone: { type: String, required: true, set: setStringType },
         sequence: { type: Number, default: 0 },
         isTempPassword: { type: Boolean, default: false, required: true },
+        isEmailVerified: { type: Boolean, default: false, required: true },
+        emailVerificationToken: { type: String, default: null, required: false },
     },
     { timestamps: true }
 );

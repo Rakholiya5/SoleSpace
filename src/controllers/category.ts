@@ -39,7 +39,9 @@ export const getCategories = async (req: AdminAuthenticatedRequest, res: Respons
 
         const categories = await Category.find(query).limit(limit).skip(skip);
 
-        return res.status(200).json({ categories, success: true });
+        const total = await Category.countDocuments(query);
+
+        return res.status(200).json({ categories, total, success: true });
     } catch (error) {
         return next(error);
     }

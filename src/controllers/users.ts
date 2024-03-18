@@ -3,7 +3,8 @@ import { Users, usersInterface } from '../db/models/users';
 import { messages } from '../utils/constants';
 import { UserAuthenticatedRequest } from '../utils/interfaces';
 import { generateTempPassword, getJwtToken } from '../utils/helper';
-import { sendTempPasswordEmail } from '../services/mail';
+import { sendEmailVerificationMail, sendTempPasswordEmail } from '../services/mail';
+import { v4 } from 'uuid';
 
 export const signUpUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -114,6 +115,54 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
         user.password = tempPassword;
         user.sequence += 1;
         user.isTempPassword = true;
+
+        await user.save();
+
+        return res.status(200).json({ success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const sendEmailVerificationLink = async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const user = await Users.findById(req.user?._id);
+
+        if (!user) throw new Error(messages.USER_NOT_FOUND);
+
+        if (user.isEmailVerified) throw new Error(messages.EMAIL_VERIFIED);
+
+        const getEmailVerificationToken = async (): Promise<string> => {
+            const token = v4();
+            const isTokenExists = await Users.findOne({ emailVerificationToken: token });
+
+            if (isTokenExists) return await getEmailVerificationToken();
+
+            return token;
+        };
+
+        user.emailVerificationToken = await getEmailVerificationToken();
+
+        await sendEmailVerificationMail(user.email, user.emailVerificationToken);
+
+        await user.save();
+
+        return res.status(200).json({ success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const token = req.params.token as string;
+
+        const user = await Users.findOne({ emailVerificationToken: token });
+
+        if (!user) throw new Error(messages.INVALID_TOKEN);
+
+        user.isEmailVerified = true;
+        user.emailVerificationToken = null;
 
         await user.save();
 

@@ -17,6 +17,9 @@ export const messages = <const>{
     ORDER_NOT_FOUND: 'Order not found',
     CATEGORY_NOT_FOUND: 'Category not found',
     CATEGORY_HAS_SHOES: 'Category has shoes',
+    EMAIL_NOT_VERIFIED: 'Email not verified',
+    EMAIL_VERIFIED: 'Email is already verified',
+    INVALID_TOKEN: 'Invalid token',
 };
 
 export const PASSWORD_SALT_ROUNDS = 10;

@@ -5,6 +5,7 @@ import { DetailsInterface, Shoes, ShoesInterface } from '../db/models/shoes';
 import fs from 'fs';
 import path from 'path';
 import { Category } from '../db/models/category';
+import { FilterQuery } from 'mongoose';
 
 export const addShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
@@ -27,8 +28,13 @@ export const getShoes = async (req: AdminAuthenticatedRequest, res: Response, ne
         const limit: number = Math.abs(parseInt(req?.query?.limit?.toString() || '10'));
         const skip: number = Math.abs(parseInt(req?.query?.skip?.toString() || '0'));
         const search: string = req?.query?.search?.toString() || '';
+        const categoryId: string = req?.query?.categoryId?.toString() || '';
 
-        const query = { name: { $regex: search, $options: 'i' }, brand: { $regex: search, $options: 'i' } };
+        const query: FilterQuery<ShoesInterface> = {
+            $or: [{ name: { $regex: search, $options: 'i' } }, { brand: { $regex: search, $options: 'i' } }],
+        };
+
+        if (categoryId) query.categoryId = categoryId;
 
         const shoes = await Shoes.find(query).limit(limit).skip(skip);
 

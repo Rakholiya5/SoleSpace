@@ -16,6 +16,8 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
 
         if (!user) throw new Error(messages.USER_NOT_FOUND);
 
+        if (!user.isEmailVerified) throw new Error(messages.EMAIL_NOT_VERIFIED);
+
         const cartItems = await Cart.find({ userId: user._id, orderId: null });
 
         if (!cartItems.length) throw new Error(messages.CART_EMPTY);

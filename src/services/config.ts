@@ -11,4 +11,5 @@ export const config = <const>{
     smtpUser: process.env.SMTP_USER || '8590c161ef6637',
     smtpPassword: process.env.SMTP_PWD || '4d190f9cdb28d8',
     noReplyEmail: process.env.NO_REPLY_EMAIL || 'noreply@solespace.com',
+    clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
 };
