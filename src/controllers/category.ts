@@ -1,14 +1,14 @@
 import { NextFunction, Response } from 'express';
 import { AdminAuthenticatedRequest } from '../utils/interfaces';
 import { messages } from '../utils/constants';
-import { Category } from '../db/models/category';
+import { Category, ICategory } from '../db/models/category';
 import path from 'path';
 import * as fs from 'fs';
 import { Shoes } from '../db/models/shoes';
 
 export const addCategory = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const { name, description } = req.body;
+        const { name, description }: ICategory = req.body;
         const file = req.file;
 
         let image = '';
@@ -63,7 +63,7 @@ export const getCategory = async (req: AdminAuthenticatedRequest, res: Response,
 
 export const updateCategory = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const { id, name, description } = req.body;
+        const { id, name, description }: ICategory = req.body;
         const file = req.file;
 
         const category = await Category.findById(id);

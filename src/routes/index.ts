@@ -6,6 +6,7 @@ import usersRouter from './users';
 import { adminCartRouter, userCartRouter } from './cart';
 import { adminOrderRouter, userOrderRouter } from './order';
 import { adminCategoryRouter } from './category';
+import { feedbackRouter } from './feedback';
 
 const routes = Router();
 
@@ -24,5 +25,7 @@ routes.use('/admin-orders', adminOrderRouter);
 routes.use('/users-orders', userOrderRouter);
 
 routes.use('/admin-category', adminCategoryRouter);
+
+routes.use('/feedback', feedbackRouter);
 
 export default routes;

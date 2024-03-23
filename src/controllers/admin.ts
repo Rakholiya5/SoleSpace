@@ -8,6 +8,7 @@ import { IUsers, Users, usersInterface } from '../db/models/users';
 import { FilterQuery } from 'mongoose';
 import { Order } from '../db/models/order';
 import { Cart } from '../db/models/cart';
+import { Feedback } from '../db/models/feedback';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -196,6 +197,8 @@ export const deleteUser = async (req: AdminAuthenticatedRequest, res: Response, 
         await Order.deleteMany({ userId: user._id });
 
         await Cart.deleteMany({ userId: user._id });
+
+        await Feedback.deleteMany({ userId: user._id });
 
         await user.deleteOne();
 

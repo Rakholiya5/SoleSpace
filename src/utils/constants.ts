@@ -20,6 +20,9 @@ export const messages = <const>{
     EMAIL_NOT_VERIFIED: 'Email not verified',
     EMAIL_VERIFIED: 'Email is already verified',
     INVALID_TOKEN: 'Invalid token',
+    FEEDBACK_ALREADY_EXISTS: 'Feedback already exists',
+    FEEDBACK_NOT_FOUND: 'Feedback not found',
+    YOU_HAVE_NOT_PURCHASED_THIS_PRODUCT_YET: 'You have not purchased this product yet',
 };
 
 export const PASSWORD_SALT_ROUNDS = 10;
