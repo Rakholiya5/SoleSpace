@@ -29,14 +29,16 @@ export const getShoes = async (req: AdminAuthenticatedRequest, res: Response, ne
         const skip: number = Math.abs(parseInt(req?.query?.skip?.toString() || '0'));
         const search: string = req?.query?.search?.toString() || '';
         const categoryId: string = req?.query?.categoryId?.toString() || '';
+        const isFeatured: boolean = req?.query?.isFeatured === 'true';
 
         const query: FilterQuery<ShoesInterface> = {
             $or: [{ name: { $regex: search, $options: 'i' } }, { brand: { $regex: search, $options: 'i' } }],
+            ...(isFeatured && { isFeatured }),
         };
 
         if (categoryId) query.categoryId = categoryId;
 
-        const shoes = await Shoes.find(query).limit(limit).skip(skip);
+        const shoes = await Shoes.find(query).limit(limit).skip(skip).populate('categoryId');
 
         const total = await Shoes.countDocuments(query);
 
@@ -222,6 +224,24 @@ export const deleteShoeImages = async (req: AdminAuthenticatedRequest, res: Resp
             const imagePath = `public/shoes/${shoe.id}/${image}`;
             if (fs.existsSync(image)) fs.unlinkSync(imagePath);
         }
+
+        await shoe.save();
+
+        return res.status(200).json({ shoe, success: true });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const featureShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+
+        const shoe = await Shoes.findById(id);
+
+        if (!shoe) throw new Error(messages.SHOE_NOT_FOUND);
+
+        shoe.isFeatured = !shoe.isFeatured;
 
         await shoe.save();
 

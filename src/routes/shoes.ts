@@ -5,6 +5,7 @@ import {
     deleteShoe,
     deleteShoeDetails,
     deleteShoeImages,
+    featureShoe,
     getShoe,
     getShoes,
     updateShoe,
@@ -44,5 +45,7 @@ shoesRouter.put('/updateDetails/:id/:detailsId', uploadShoesImages, validate(upd
 shoesRouter.delete('/deleteDetails/:id/:detailsId', validate(deleteShoeDetailsValidation), deleteShoeDetails);
 
 shoesRouter.delete('/shoesImages/:id/:detailsId', validate(deleteShoeImagesValidation), deleteShoeImages);
+
+shoesRouter.get('/featureShoe/:id', featureShoe);
 
 export default shoesRouter;

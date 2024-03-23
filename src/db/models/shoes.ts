@@ -31,6 +31,7 @@ export interface ShoesInterface {
     brand: string;
     details: DetailsInterface[];
     categoryId: string;
+    isFeatured: boolean;
 }
 
 interface IShoes extends Document, ShoesInterface {}
@@ -43,6 +44,7 @@ const shoesSchema = new Schema<IShoes>(
         brand: { type: String, required: true, set: setStringType },
         details: { type: [DetailsSchema], required: true },
         categoryId: { type: String, ref: 'Category', required: true },
+        isFeatured: { type: Boolean, default: false, required: true },
     },
     { timestamps: true, toJSON: { getters: true } }
 );
