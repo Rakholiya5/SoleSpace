@@ -1,5 +1,5 @@
 import { Joi, Segments } from 'celebrate';
-import { stringRequired, numberRequired } from './constant';
+import { stringRequired, numberRequired, numberOptional, stringOptional, booleanOptional } from './constant';
 
 export const addShoeValidation = {
     [Segments.BODY]: Joi.object().keys({
@@ -73,5 +73,17 @@ export const deleteShoeImagesValidation = {
     }),
     [Segments.BODY]: Joi.object().keys({
         images: Joi.array().items(Joi.string()).required(),
+    }),
+};
+
+export const getShoesValidation = {
+    [Segments.QUERY]: Joi.object().keys({
+        limit: numberOptional.default(10),
+        skip: numberOptional.default(0),
+        search: stringOptional,
+        categoryId: stringOptional,
+        minPrice: numberOptional,
+        maxPrice: numberOptional.greater(Joi.ref('minPrice')),
+        isFeatured: booleanOptional,
     }),
 };

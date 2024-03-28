@@ -30,10 +30,14 @@ export const getShoes = async (req: AdminAuthenticatedRequest, res: Response, ne
         const search: string = req?.query?.search?.toString() || '';
         const categoryId: string = req?.query?.categoryId?.toString() || '';
         const isFeatured: boolean = req?.query?.isFeatured === 'true';
+        const minPrice: number = Math.abs(parseInt(req?.query?.minPrice?.toString() || '0'));
+        const maxPrice: number = Math.abs(parseInt(req?.query?.maxPrice?.toString() || '0'));
 
         const query: FilterQuery<ShoesInterface> = {
             $or: [{ name: { $regex: search, $options: 'i' } }, { brand: { $regex: search, $options: 'i' } }],
             ...(isFeatured && { isFeatured }),
+            ...(minPrice && { price: { $gte: minPrice } }),
+            ...(maxPrice && { price: { $lte: maxPrice } }),
         };
 
         if (categoryId) query.categoryId = categoryId;
@@ -52,7 +56,7 @@ export const getShoe = async (req: AdminAuthenticatedRequest, res: Response, nex
     try {
         const { id } = req.params;
 
-        const shoe = await Shoes.findById(id);
+        const shoe = await Shoes.findById(id).populate('categoryId');
 
         if (!shoe) throw new Error(messages.SHOE_NOT_FOUND);
 
@@ -245,7 +249,7 @@ export const featureShoe = async (req: AdminAuthenticatedRequest, res: Response,
 
         await shoe.save();
 
-        return res.status(200).json({ shoe, success: true });
+        return res.status(200).json({ shoe, success: true, message: shoe.isFeatured ? messages.SHOE_FEATURED : messages.SHOE_UNFEATURED });
     } catch (error) {
         return next(error);
     }

@@ -19,6 +19,7 @@ import {
     deleteShoeImagesValidation,
     deleteShoeValidation,
     getShoeValidation,
+    getShoesValidation,
     updateShoeDetailsValidation,
     updateShoeValidation,
 } from '../validations/shoes';
@@ -30,7 +31,7 @@ const shoesRouter = Router();
 
 shoesRouter.post('/add', validate(addShoeValidation), addShoe);
 
-shoesRouter.get('/', getShoes);
+shoesRouter.get('/', validate(getShoesValidation), getShoes);
 
 shoesRouter.get('/:id', validate(getShoeValidation), getShoe);
 

@@ -23,6 +23,8 @@ export const messages = <const>{
     FEEDBACK_ALREADY_EXISTS: 'Feedback already exists',
     FEEDBACK_NOT_FOUND: 'Feedback not found',
     YOU_HAVE_NOT_PURCHASED_THIS_PRODUCT_YET: 'You have not purchased this product yet',
+    SHOE_FEATURED: 'Shoe featured',
+    SHOE_UNFEATURED: 'Shoe unfeatured',
 };
 
 export const PASSWORD_SALT_ROUNDS = 10;

@@ -21,4 +21,8 @@ adminCategoryRouter.delete('/delete/:id', deleteCategory);
 
 adminCategoryRouter.delete('/delete-image/:id', deleteCategoryImage);
 
-export { adminCategoryRouter };
+const userCategoryRouter = Router();
+
+userCategoryRouter.get('/', getCategories);
+
+export { adminCategoryRouter, userCategoryRouter };

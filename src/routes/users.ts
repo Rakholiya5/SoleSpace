@@ -19,6 +19,7 @@ import {
     updateUserValidation,
 } from '../validations/users';
 import { getShoe, getShoes } from '../controllers/shoes';
+import { getShoeValidation, getShoesValidation } from '../validations/shoes';
 
 const usersRouter = Router();
 
@@ -38,9 +39,9 @@ usersRouter.put('/change-password', validate(changeUserPasswordValidation), chan
 
 usersRouter.put('/update', validate(updateUserValidation), updateUser);
 
-usersRouter.get('/shoes', getShoes);
+usersRouter.get('/shoes', validate(getShoesValidation), getShoes);
 
-usersRouter.get('/shoes/:id', getShoe);
+usersRouter.get('/shoes/:id', validate(getShoeValidation), getShoe);
 
 usersRouter.get('/send-email-verification-mail', sendEmailVerificationLink);
 
