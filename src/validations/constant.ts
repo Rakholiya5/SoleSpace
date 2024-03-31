@@ -2,7 +2,7 @@ import { Joi } from 'celebrate';
 
 export const stringValidation = Joi.string().trim();
 
-export const stringOptional = stringValidation.optional();
+export const stringOptional = stringValidation.optional().allow('');
 
 export const stringRequired = stringValidation.required();
 

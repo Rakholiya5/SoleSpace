@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { Category } from '../db/models/category';
 import { FilterQuery } from 'mongoose';
+import { Feedback } from '../db/models/feedback';
 
 export const addShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
@@ -42,7 +43,18 @@ export const getShoes = async (req: AdminAuthenticatedRequest, res: Response, ne
 
         if (categoryId) query.categoryId = categoryId;
 
-        const shoes = await Shoes.find(query).limit(limit).skip(skip).populate('categoryId');
+        const data = await Shoes.find(query).limit(limit).skip(skip).populate('categoryId');
+
+        const shoes: (ShoesInterface & { avgRating: number })[] = [];
+
+        for (const shoe of data) {
+            const avgRating = await Feedback.aggregate([
+                { $match: { shoeId: shoe._id.toString() } },
+                { $group: { _id: null, avgRating: { $avg: '$rating' } } },
+            ]);
+
+            shoes.push({ ...shoe.toObject({ getters: true }), avgRating: avgRating[0]?.avgRating || 0 });
+        }
 
         const total = await Shoes.countDocuments(query);
 
@@ -60,7 +72,14 @@ export const getShoe = async (req: AdminAuthenticatedRequest, res: Response, nex
 
         if (!shoe) throw new Error(messages.SHOE_NOT_FOUND);
 
-        return res.status(200).json({ shoe, success: true });
+        const avgRating = await Feedback.aggregate([
+            { $match: { shoeId: shoe._id.toString() } },
+            { $group: { _id: null, avgRating: { $avg: '$rating' } } },
+        ]);
+
+        const feedbacks = await Feedback.find({ shoeId: shoe._id.toString() });
+
+        return res.status(200).json({ shoe, avgRating, feedbacks, success: true });
     } catch (error) {
         return next(error);
     }
