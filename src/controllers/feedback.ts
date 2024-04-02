@@ -83,7 +83,7 @@ export const removeFeedback = async (req: UserAuthenticatedRequest, res: Respons
     try {
         const { id } = req.params;
 
-        const feedback = await Feedback.findOne({ userId: req.user?._id, id });
+        const feedback = await Feedback.findOne({ userId: req.user?._id, _id: id });
 
         if (!feedback) throw new Error(messages.FEEDBACK_NOT_FOUND);
 
