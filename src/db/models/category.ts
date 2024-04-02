@@ -16,7 +16,7 @@ const categorySchema = new Schema<ICategory>(
     {
         name: { type: String, required: true, set: setStringType },
         description: { type: String, required: true, set: setStringType },
-        image: { type: String, required: false },
+        image: { type: String, required: false, default: '' },
     },
     { timestamps: true, toJSON: { getters: true } }
 );

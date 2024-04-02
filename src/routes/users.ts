@@ -18,7 +18,7 @@ import {
     signUpUserValidation,
     updateUserValidation,
 } from '../validations/users';
-import { getShoe, getShoes } from '../controllers/shoes';
+import { getShoes, getUserShoe } from '../controllers/shoes';
 import { getShoeValidation, getShoesValidation } from '../validations/shoes';
 
 const usersRouter = Router();
@@ -41,7 +41,7 @@ usersRouter.put('/update', validate(updateUserValidation), updateUser);
 
 usersRouter.get('/shoes', validate(getShoesValidation), getShoes);
 
-usersRouter.get('/shoes/:id', validate(getShoeValidation), getShoe);
+usersRouter.get('/shoes/:id', validate(getShoeValidation), getUserShoe);
 
 usersRouter.get('/send-email-verification-mail', sendEmailVerificationLink);
 

@@ -6,7 +6,7 @@ import {
     deleteShoeDetails,
     deleteShoeImages,
     featureShoe,
-    getShoe,
+    getAdminShoe,
     getShoes,
     updateShoe,
     updateShoeDetails,
@@ -33,7 +33,7 @@ shoesRouter.post('/add', validate(addShoeValidation), addShoe);
 
 shoesRouter.get('/', validate(getShoesValidation), getShoes);
 
-shoesRouter.get('/:id', validate(getShoeValidation), getShoe);
+shoesRouter.get('/:id', validate(getShoeValidation), getAdminShoe);
 
 shoesRouter.put('/update/:id', validate(updateShoeValidation), updateShoe);
 

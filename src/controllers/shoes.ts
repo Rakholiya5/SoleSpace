@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express';
-import { AdminAuthenticatedRequest } from '../utils/interfaces';
+import { AdminAuthenticatedRequest, UserAuthenticatedRequest } from '../utils/interfaces';
 import { messages } from '../utils/constants';
 import { DetailsInterface, Shoes, ShoesInterface } from '../db/models/shoes';
 import fs from 'fs';
@@ -64,7 +64,33 @@ export const getShoes = async (req: AdminAuthenticatedRequest, res: Response, ne
     }
 };
 
-export const getShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
+export const getUserShoe = async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+
+        const userId = req.user?._id;
+
+        if (!userId) throw new Error(messages.USER_NOT_FOUND);
+
+        const shoe = await Shoes.findById(id).populate('categoryId');
+
+        if (!shoe) throw new Error(messages.SHOE_NOT_FOUND);
+
+        const shoeId = shoe._id.toString();
+
+        const avgRating = await Feedback.aggregate([{ $match: { shoeId } }, { $group: { _id: null, avgRating: { $avg: '$rating' } } }]);
+
+        const feedbacks = await Feedback.find({ shoeId, userId: { $ne: userId } });
+
+        const userFeedback = await Feedback.findOne({ shoeId, userId });
+
+        return res.status(200).json({ shoe, avgRating, feedbacks, success: true, userFeedback });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const getAdminShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 

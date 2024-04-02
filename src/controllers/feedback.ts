@@ -52,7 +52,7 @@ export const editFeedback = async (req: UserAuthenticatedRequest, res: Response,
         const { description, rating, id }: IFeedback = req.body;
         const file = req.file;
 
-        const feedback = await Feedback.findOne({ userId: req.user?._id, id });
+        const feedback = await Feedback.findOne({ userId: req.user?._id, _id: id });
 
         if (!feedback) throw new Error(messages.FEEDBACK_NOT_FOUND);
 
@@ -86,6 +86,11 @@ export const removeFeedback = async (req: UserAuthenticatedRequest, res: Respons
         const feedback = await Feedback.findOne({ userId: req.user?._id, id });
 
         if (!feedback) throw new Error(messages.FEEDBACK_NOT_FOUND);
+
+        if (feedback.image) {
+            const imagePath = `public/feedbacks/${feedback.image}`;
+            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        }
 
         await feedback.deleteOne();
 
