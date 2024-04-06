@@ -114,9 +114,21 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
 export const addUser = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const { address, age, email, name, password, phone }: usersInterface = req.body;
+        const { line1, city, country, postalCode, state, age, email, name, password, phone }: usersInterface = req.body;
 
-        const user = await Users.create({ address, age, email, name, password, phone, isTempPassword: true });
+        const user = await Users.create({
+            line1,
+            city,
+            country,
+            postalCode,
+            state,
+            age,
+            email,
+            name,
+            password,
+            phone,
+            isTempPassword: true,
+        });
 
         await sendWelcomeEmail(email, password);
 
@@ -129,13 +141,17 @@ export const addUser = async (req: AdminAuthenticatedRequest, res: Response, nex
 export const updateUser = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const { address, age, name, phone }: usersInterface = req.body;
+        const { line1, city, country, postalCode, state, age, name, phone }: usersInterface = req.body;
 
         const user = await Users.findById(id);
 
         if (!user) throw new Error(messages.USER_NOT_FOUND);
 
-        user.address = address;
+        user.line1 = line1;
+        user.city = city;
+        user.country = country;
+        user.postalCode = postalCode;
+        user.state = state;
         user.age = age;
         user.name = name;
         user.phone = phone;

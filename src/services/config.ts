@@ -12,4 +12,7 @@ export const config = <const>{
     smtpPassword: process.env.SMTP_PWD || '4d190f9cdb28d8',
     noReplyEmail: process.env.NO_REPLY_EMAIL || 'noreply@solespace.com',
     clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
+    stripeSecret:
+        process.env.STRIPE_SECRET ||
+        'sk_test_51P2S5BSHsPLYITOXJ0vC42LzihRFJvWjmN23DvoAa9ZOuesi5eXV0rZBF1MWA1ht9CMl0uWd8FPFEenEKqpzuKXv00OtrZgYh0',
 };

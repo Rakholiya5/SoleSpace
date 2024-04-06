@@ -9,7 +9,11 @@ export const signUpUserValidation = {
         confirmPassword: Joi.ref('password'),
         name: stringRequired,
         age: numberRequired,
-        address: stringRequired,
+        line1: stringRequired,
+        postalCode: stringRequired,
+        city: stringRequired,
+        state: stringRequired,
+        country: stringRequired,
         phone,
     }),
 };
@@ -22,7 +26,11 @@ export const updateUserValidation = {
     [Segments.BODY]: Joi.object().keys({
         name: stringRequired,
         age: numberRequired,
-        address: stringRequired,
+        line1: stringRequired,
+        postalCode: stringRequired,
+        city: stringRequired,
+        state: stringRequired,
+        country: stringRequired,
         phone,
     }),
 };

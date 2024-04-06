@@ -29,6 +29,8 @@ export const messages = <const>{
 
 export const PASSWORD_SALT_ROUNDS = 10;
 
+export const TAX_PERCENTAGE = 13;
+
 export enum OrderStatus {
     PENDING = 'PENDING',
     PROCESSING = 'PROCESSING',

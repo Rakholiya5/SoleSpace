@@ -4,7 +4,11 @@ import { OrderStatus, PaymentMethod } from '../utils/constants';
 
 export const createOrderValidation = {
     [Segments.BODY]: Joi.object().keys({
-        address: stringRequired,
+        line1: stringRequired,
+        city: stringRequired,
+        country: stringRequired,
+        postalCode: stringRequired,
+        state: stringRequired,
         phone: stringRequired,
         paymentMethod: Joi.string()
             .valid(...Object.values(PaymentMethod))

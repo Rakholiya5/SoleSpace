@@ -8,13 +8,13 @@ import { v4 } from 'uuid';
 
 export const signUpUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, address, age, name, phone }: usersInterface = req.body;
+        const { email, password, line1, city, country, postalCode, state, age, name, phone }: usersInterface = req.body;
 
         const isEmailExists = await Users.findOne({ email });
 
         if (isEmailExists) throw new Error(messages.USER_EXISTS);
 
-        const user = await Users.create({ email, password, address, age, name, phone });
+        const user = await Users.create({ email, password, line1, city, country, postalCode, state, age, name, phone });
 
         const token = getJwtToken(user._id, user.sequence);
 
@@ -84,13 +84,13 @@ export const changePassword = async (req: UserAuthenticatedRequest, res: Respons
 
 export const updateUser = async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const { name, address, age, phone }: usersInterface = req.body;
+        const { name, line1, city, country, postalCode, state, age, phone }: usersInterface = req.body;
 
         const user = await Users.findById(req.user?._id);
 
         if (!user) throw new Error(messages.USER_NOT_FOUND);
 
-        user.set({ name, address, age, phone });
+        user.set({ name, line1, city, country, postalCode, state, age, phone });
 
         await user.save();
 

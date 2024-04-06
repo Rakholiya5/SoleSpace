@@ -8,7 +8,11 @@ export interface usersInterface {
     password: string;
     name: string;
     age: number;
-    address: string;
+    line1: string;
+    postalCode: string;
+    city: string;
+    state: string;
+    country: string;
     phone: string;
     isTempPassword?: boolean;
     isEmailVerified?: boolean;
@@ -26,7 +30,11 @@ const usersSchema = new Schema<IUsers>(
         password: { type: String, required: true },
         name: { type: String, required: true, set: setStringType },
         age: { type: Number, required: true },
-        address: { type: String, required: true, set: setStringType },
+        line1: { type: String, required: true, set: setStringType },
+        postalCode: { type: String, required: true, set: setStringType },
+        city: { type: String, required: true, set: setStringType },
+        state: { type: String, required: true, set: setStringType },
+        country: { type: String, required: true, set: setStringType },
         phone: { type: String, required: true, set: setStringType },
         sequence: { type: Number, default: 0 },
         isTempPassword: { type: Boolean, default: false, required: true },

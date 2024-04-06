@@ -1,16 +1,18 @@
 import { NextFunction, Response } from 'express';
 import { AdminAuthenticatedRequest, UserAuthenticatedRequest } from '../utils/interfaces';
-import { OrderStatus, PaymentMethod, messages } from '../utils/constants';
-import { Users } from '../db/models/users';
+import { OrderStatus, PaymentMethod, TAX_PERCENTAGE, messages } from '../utils/constants';
+import { IUsers, Users, usersInterface } from '../db/models/users';
 import { Cart } from '../db/models/cart';
 import { Shoes } from '../db/models/shoes';
 import { IOrder, Order } from '../db/models/order';
 import { FilterQuery } from 'mongoose';
+import Stripe from 'stripe';
+
+export const stripe = new Stripe(config.stripeSecret);
 
 export const createOrder = async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const { address, phone, paymentMethod }: { cartItems: string[]; address: string; phone: string; paymentMethod: PaymentMethod } =
-            req.body;
+        const { line1, city, country, postalCode, state, phone, paymentMethod }: IOrder & { paymentMethod: PaymentMethod } = req.body;
 
         const user = await Users.findById(req.user?._id);
 
@@ -43,8 +45,22 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
         }
 
         total = +total.toFixed(2);
+        const tax = +((total * TAX_PERCENTAGE) / 100).toFixed(2);
+        const finalTotal = +(total + tax).toFixed(2);
 
-        const order = await Order.create({ userId: user._id, address, phone, total, paymentMethod });
+        const order = await Order.create({
+            userId: user._id,
+            line1,
+            city,
+            country,
+            postalCode,
+            state,
+            phone,
+            total,
+            tax,
+            finalTotal,
+            paymentMethod,
+        });
 
         await Cart.updateMany({ userId: user._id, orderId: null }, { orderId: order._id });
 
@@ -165,4 +181,18 @@ export const getOrderStatusesAdmin = async (req: AdminAuthenticatedRequest, res:
     } catch (error) {
         return next(error);
     }
+};
+
+const createPayment = async (user: IUsers) => {
+    const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.name,
+        address: {
+            line1: user.line1,
+            city: user.city,
+            country: user.country,
+            postal_code: user.postalCode,
+            state: user.state,
+        },
+    });
 };

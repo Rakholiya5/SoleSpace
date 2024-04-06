@@ -1,7 +1,7 @@
 import { NextFunction, Response } from 'express';
 import { Cart } from '../db/models/cart';
 import { Users } from '../db/models/users';
-import { messages } from '../utils/constants';
+import { TAX_PERCENTAGE, messages } from '../utils/constants';
 import { UserAuthenticatedRequest } from '../utils/interfaces';
 import { Shoes } from '../db/models/shoes';
 
@@ -55,6 +55,8 @@ export const getMyCartsItems = async (req: UserAuthenticatedRequest, res: Respon
 
         const cartItems = [];
 
+        let total = 0;
+
         for (const item of data) {
             const shoe = await Shoes.findOne({ _id: item.shoeId });
 
@@ -72,12 +74,19 @@ export const getMyCartsItems = async (req: UserAuthenticatedRequest, res: Respon
                             description: shoe.description,
                         },
                         details,
+                        subTotal: shoe.price * item.quantity,
                     });
+
+                    total += shoe.price * item.quantity;
                 }
             }
         }
 
-        return res.status(200).json({ cartItems, success: true });
+        total = +total.toFixed(2);
+        const tax = +((total * TAX_PERCENTAGE) / 100).toFixed(2);
+        const finalTotal = +(total + tax).toFixed(2);
+
+        return res.status(200).json({ cartItems, success: true, total, tax, finalTotal });
     } catch (error) {
         return next(error);
     }

@@ -1,11 +1,18 @@
 import { Document, Schema, model } from 'mongoose';
 import { OrderStatus } from '../../utils/constants';
+import { setStringType } from './admin';
 
 export interface IOrder extends Document {
     userId: string;
     total: number;
+    tax: number;
+    finalTotal: number;
     status: OrderStatus;
-    address: string;
+    line1: string;
+    city: string;
+    country: string;
+    postalCode: string;
+    state: string;
     phone: string;
 }
 
@@ -13,9 +20,15 @@ const orderSchema = new Schema<IOrder>(
     {
         userId: { type: String, required: true, ref: 'User' },
         total: { type: Number, required: true },
+        tax: { type: Number, required: true },
+        finalTotal: { type: Number, required: true },
         status: { type: String, required: true, enum: Object.values(OrderStatus), default: OrderStatus.PENDING },
-        address: { type: String, required: true },
-        phone: { type: String, required: true },
+        line1: { type: String, required: true, set: setStringType },
+        city: { type: String, required: true, set: setStringType },
+        country: { type: String, required: true, set: setStringType },
+        postalCode: { type: String, required: true, set: setStringType },
+        state: { type: String, required: true, set: setStringType },
+        phone: { type: String, required: true, set: setStringType },
     },
     { timestamps: true }
 );
