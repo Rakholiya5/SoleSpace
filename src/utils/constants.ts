@@ -25,6 +25,7 @@ export const messages = <const>{
     YOU_HAVE_NOT_PURCHASED_THIS_PRODUCT_YET: 'You have not purchased this product yet',
     SHOE_FEATURED: 'Shoe featured',
     SHOE_UNFEATURED: 'Shoe unfeatured',
+    CONTACT_US_SUCCESS: 'Message sent successfully',
 };
 
 export const PASSWORD_SALT_ROUNDS = 10;

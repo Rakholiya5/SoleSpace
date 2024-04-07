@@ -7,6 +7,7 @@ import { adminCartRouter, userCartRouter } from './cart';
 import { adminOrderRouter, userOrderRouter } from './order';
 import { adminCategoryRouter, userCategoryRouter } from './category';
 import { feedbackRouter } from './feedback';
+import { contactUsRouter } from './contactUs';
 
 const routes = Router();
 
@@ -29,5 +30,7 @@ routes.use('/admin-category', adminCategoryRouter);
 routes.use('/users-category', verifyUser, userCategoryRouter);
 
 routes.use('/feedback', feedbackRouter);
+
+routes.use('/contact-us', contactUsRouter);
 
 export default routes;

@@ -7,6 +7,7 @@ import { Shoes } from '../db/models/shoes';
 import { IOrder, Order } from '../db/models/order';
 import { FilterQuery } from 'mongoose';
 import Stripe from 'stripe';
+import { config } from '../services/config';
 
 export const stripe = new Stripe(config.stripeSecret);
 
@@ -183,16 +184,25 @@ export const getOrderStatusesAdmin = async (req: AdminAuthenticatedRequest, res:
     }
 };
 
-const createPayment = async (user: IUsers) => {
-    const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.name,
-        address: {
-            line1: user.line1,
-            city: user.city,
-            country: user.country,
-            postal_code: user.postalCode,
-            state: user.state,
-        },
+const createPayment = async (user: IUsers, amount: number) => {
+    // const customer = await stripe.customers.create({
+    //     email: user.email,
+    //     name: user.name,
+    //     address: {
+    //         line1: user.line1,
+    //         city: user.city,
+    //         country: user.country,
+    //         postal_code: user.postalCode,
+    //         state: user.state,
+    //     },
+    // });
+
+    const charge = await stripe.charges.create({
+        amount,
+        currency: 'usd',
+        source: '',
+        description: 'Payment for shoes',
     });
+
+    // charge.
 };
