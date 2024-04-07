@@ -14,6 +14,6 @@ export const getContactUsValidation = {
     [Segments.QUERY]: Joi.object().keys({
         limit: Joi.number().positive().default(10),
         skip: Joi.number().default(0),
-        search: Joi.string().default(''),
+        search: Joi.string().allow('').default(''),
     }),
 };

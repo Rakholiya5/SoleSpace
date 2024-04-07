@@ -29,7 +29,9 @@ export const getContactUs = async (req: AdminAuthenticatedRequest, res: Response
 
         const contactUs = await ContactUs.find(query).limit(limit).skip(skip).sort({ createdAt: -1 });
 
-        return res.status(200).json({ contactUs, success: true });
+        const total = await ContactUs.countDocuments(query);
+
+        return res.status(200).json({ contactUs, success: true, total });
     } catch (error) {
         return next(error);
     }
