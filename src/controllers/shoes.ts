@@ -31,7 +31,7 @@ export const getShoes = async (req: AdminAuthenticatedRequest, res: Response, ne
         const skip: number = Math.abs(parseInt(req?.query?.skip?.toString() || '0'));
         const search: string = req?.query?.search?.toString() || '';
         const categoryId: string = req?.query?.categoryId?.toString() || '';
-        const isFeatured: boolean = req?.query?.isFeatured === 'true';
+        const isFeatured: boolean = !!req?.query?.isFeatured;
         const minPrice: number = Math.abs(parseInt(req?.query?.minPrice?.toString() || '0'));
         const maxPrice: number = Math.abs(parseInt(req?.query?.maxPrice?.toString() || '0'));
 
