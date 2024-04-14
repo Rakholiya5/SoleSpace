@@ -8,6 +8,7 @@ import { adminOrderRouter, userOrderRouter } from './order';
 import { adminCategoryRouter, userCategoryRouter } from './category';
 import { feedbackRouter } from './feedback';
 import { contactUsRouter } from './contactUs';
+import { webhook } from '../controllers/order';
 
 const routes = Router();
 
@@ -32,5 +33,7 @@ routes.use('/users-category', verifyUser, userCategoryRouter);
 routes.use('/feedback', feedbackRouter);
 
 routes.use('/contact-us', contactUsRouter);
+
+routes.post('/webhook', webhook);
 
 export default routes;

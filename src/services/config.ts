@@ -15,4 +15,5 @@ export const config = <const>{
     stripeSecret:
         process.env.STRIPE_SECRET ||
         'sk_test_51P2S5BSHsPLYITOXJ0vC42LzihRFJvWjmN23DvoAa9ZOuesi5eXV0rZBF1MWA1ht9CMl0uWd8FPFEenEKqpzuKXv00OtrZgYh0',
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || 'whsec_ffe3e304c4ea97777f3e412c245aec5f864f110abf99b14cfda3fd0405127059',
 };

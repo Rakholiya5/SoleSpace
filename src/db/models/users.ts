@@ -17,6 +17,7 @@ export interface usersInterface {
     isTempPassword?: boolean;
     isEmailVerified?: boolean;
     emailVerificationToken: string | null;
+    stripe_id: string | null;
 }
 
 export interface IUsers extends Document, usersInterface {
@@ -40,6 +41,7 @@ const usersSchema = new Schema<IUsers>(
         isTempPassword: { type: Boolean, default: false, required: true },
         isEmailVerified: { type: Boolean, default: false, required: true },
         emailVerificationToken: { type: String, default: null, required: false },
+        stripe_id: { type: String, default: null, required: false },
     },
     { timestamps: true }
 );

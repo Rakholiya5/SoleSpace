@@ -63,6 +63,8 @@ export const getMyCartsItems = async (req: UserAuthenticatedRequest, res: Respon
             if (shoe) {
                 const details = shoe.details.find((detail) => detail?._id?.toString() === item.detailId);
 
+                const tax = +((shoe.price * item.quantity * TAX_PERCENTAGE) / 100).toFixed(2);
+
                 if (details) {
                     cartItems.push({
                         ...item.toJSON(),
@@ -75,6 +77,7 @@ export const getMyCartsItems = async (req: UserAuthenticatedRequest, res: Respon
                         },
                         details,
                         subTotal: shoe.price * item.quantity,
+                        tax: +((shoe.price * item.quantity * TAX_PERCENTAGE) / 100).toFixed(2),
                     });
 
                     total += shoe.price * item.quantity;

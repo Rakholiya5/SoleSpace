@@ -1,7 +1,7 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AdminAuthenticatedRequest, UserAuthenticatedRequest } from '../utils/interfaces';
 import { OrderStatus, PaymentMethod, TAX_PERCENTAGE, messages } from '../utils/constants';
-import { IUsers, Users, usersInterface } from '../db/models/users';
+import { Users } from '../db/models/users';
 import { Cart } from '../db/models/cart';
 import { Shoes } from '../db/models/shoes';
 import { IOrder, Order } from '../db/models/order';
@@ -26,6 +26,7 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
         if (!cartItems.length) throw new Error(messages.CART_EMPTY);
 
         let total = 0;
+        const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
         for (const item of cartItems) {
             const shoe = await Shoes.findById(item.shoeId);
@@ -41,6 +42,21 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
             details.quantity -= item.quantity;
 
             await shoe.save();
+
+            const perItemTax = +((shoe.price * TAX_PERCENTAGE) / 100).toFixed(2);
+
+            line_items.push({
+                price_data: {
+                    currency: 'inr',
+                    product_data: {
+                        name: shoe.name,
+                        description: shoe.description,
+                        images: details.images,
+                    },
+                    unit_amount: shoe.price * 100 + perItemTax,
+                },
+                quantity: item.quantity,
+            });
 
             total += shoe.price * item.quantity;
         }
@@ -65,7 +81,54 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
 
         await Cart.updateMany({ userId: user._id, orderId: null }, { orderId: order._id });
 
-        return res.status(201).json({ cartItems, success: true });
+        if (paymentMethod !== PaymentMethod.CASH_ON_DELIVERY) {
+            if (!user.stripe_id) {
+                const customer = await stripe.customers.create({
+                    email: user.email,
+                    name: user.name,
+                    // phone: user.phone,
+                    // address: {
+                    //     line1: user.line1,
+                    //     city: user.city,
+                    //     country: user.country,
+                    //     postal_code: user.postalCode,
+                    //     state: user.state,
+                    // },
+                });
+
+                user.stripe_id = customer.id;
+
+                await user.save();
+            }
+
+            const customer = await stripe.customers.retrieve(user.stripe_id);
+
+            const session = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                customer: customer.id,
+                billing_address_collection: 'required',
+                phone_number_collection: {
+                    enabled: true,
+                },
+                line_items,
+                mode: 'payment',
+                success_url: `${config.clientUrl}/checkout/success`,
+                cancel_url: `${config.clientUrl}/checkout/cancel`,
+                metadata: {
+                    orderId: order._id,
+                },
+                currency: 'inr',
+                payment_intent_data: {
+                    metadata: {
+                        orderId: order._id,
+                    },
+                },
+            });
+
+            return res.status(201).json({ url: session.url, success: true });
+        }
+
+        return res.status(201).json({ success: true });
     } catch (error) {
         return next(error);
     }
@@ -184,25 +247,32 @@ export const getOrderStatusesAdmin = async (req: AdminAuthenticatedRequest, res:
     }
 };
 
-const createPayment = async (user: IUsers, amount: number) => {
-    // const customer = await stripe.customers.create({
-    //     email: user.email,
-    //     name: user.name,
-    //     address: {
-    //         line1: user.line1,
-    //         city: user.city,
-    //         country: user.country,
-    //         postal_code: user.postalCode,
-    //         state: user.state,
-    //     },
-    // });
+export const webhook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const sig = req.headers['stripe-signature'] as string;
 
-    const charge = await stripe.charges.create({
-        amount,
-        currency: 'usd',
-        source: '',
-        description: 'Payment for shoes',
-    });
+        let event: Stripe.Event;
 
-    // charge.
+        try {
+            event = stripe.webhooks.constructEvent(req.body, sig, config.stripeWebhookSecret);
+        } catch (error: unknown) {
+            return res.status(400).send(`Webhook Error: ${JSON.stringify(error) || 'Invalid signature'}`);
+        }
+
+        if (event.type === 'checkout.session.completed') {
+            const session = event.data.object as Stripe.Checkout.Session;
+
+            const order = await Order.findById(session?.metadata?.orderId);
+
+            if (!order) throw new Error(messages.ORDER_NOT_FOUND);
+
+            order.isPaid = true;
+
+            await order.save();
+        }
+
+        return res.json({ received: true });
+    } catch (error) {
+        return next(error);
+    }
 };

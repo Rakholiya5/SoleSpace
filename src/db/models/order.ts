@@ -14,6 +14,7 @@ export interface IOrder extends Document {
     postalCode: string;
     state: string;
     phone: string;
+    isPaid: boolean;
 }
 
 const orderSchema = new Schema<IOrder>(
@@ -29,6 +30,7 @@ const orderSchema = new Schema<IOrder>(
         postalCode: { type: String, required: true, set: setStringType },
         state: { type: String, required: true, set: setStringType },
         phone: { type: String, required: true, set: setStringType },
+        isPaid: { type: Boolean, default: false },
     },
     { timestamps: true }
 );
