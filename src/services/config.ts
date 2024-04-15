@@ -4,6 +4,7 @@ dotenv.config();
 export const config = <const>{
     baseUrl: process.env.BASE_URL || 'http://localhost:3000',
     port: process.env.PORT || 3000,
+    webhookPort: process.env.WEBHOOK_PORT || 3001,
     mongoUri: process.env.MONGO_URL || 'mongodb://localhost:27017/my-db',
     jwtSecret: process.env.JWT_SECRET || 'secret',
     smtpHost: process.env.SMTP_HOST || 'sandbox.smtp.mailtrap.io',

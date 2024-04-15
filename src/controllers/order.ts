@@ -105,24 +105,24 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
 
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
-                customer: customer.id,
+                // customer: customer.id,
                 billing_address_collection: 'required',
                 phone_number_collection: {
                     enabled: true,
                 },
                 line_items,
                 mode: 'payment',
-                success_url: `${config.clientUrl}/checkout/success`,
+                success_url: `${config.clientUrl}/orders`,
                 cancel_url: `${config.clientUrl}/checkout/cancel`,
                 metadata: {
                     orderId: order._id,
                 },
                 currency: 'inr',
-                payment_intent_data: {
-                    metadata: {
-                        orderId: order._id,
-                    },
-                },
+                // payment_intent_data: {
+                //     metadata: {
+                //         orderId: order._id,
+                //     },
+                // },
             });
 
             return res.status(201).json({ url: session.url, success: true });
@@ -250,14 +250,19 @@ export const getOrderStatusesAdmin = async (req: AdminAuthenticatedRequest, res:
 export const webhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const sig = req.headers['stripe-signature'] as string;
+        const body = req.body;
 
         let event: Stripe.Event;
 
         try {
-            event = stripe.webhooks.constructEvent(req.body, sig, config.stripeWebhookSecret);
+            event = stripe.webhooks.constructEvent(body, sig, config.stripeWebhookSecret);
         } catch (error: unknown) {
+            // console.log('error', error);
+
             return res.status(400).send(`Webhook Error: ${JSON.stringify(error) || 'Invalid signature'}`);
         }
+
+        console.log('event', event.type);
 
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object as Stripe.Checkout.Session;
