@@ -43,7 +43,7 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
 
             await shoe.save();
 
-            const perItemTax = +((shoe.price * TAX_PERCENTAGE) / 100).toFixed(2);
+            const perItemTax = +((shoe.price * TAX_PERCENTAGE) / 100).toFixed(2) * 100;
 
             line_items.push({
                 price_data: {
