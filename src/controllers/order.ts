@@ -239,7 +239,8 @@ export const changeOrderStatusAdmin = async (req: AdminAuthenticatedRequest, res
 
         if (!order) throw new Error(messages.ORDER_NOT_FOUND);
 
-        if (order.status !== OrderStatus.PENDING) throw new Error(`You can't change order status to ${status}`);
+        if (order.status !== OrderStatus.PENDING && status === OrderStatus.PENDING)
+            throw new Error(`You can't change order status to ${status}`);
 
         order.status = status;
 
