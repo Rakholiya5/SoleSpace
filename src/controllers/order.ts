@@ -121,7 +121,7 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
                 success_url: `${config.clientUrl}/orders`,
                 cancel_url: `${config.clientUrl}/checkout/cancel`,
                 metadata: {
-                    orderId: order._id.toString(),
+                    orderId: order[0]._id.toString(),
                 },
                 currency: 'cad',
                 // payment_intent_data: {
@@ -269,8 +269,6 @@ export const webhook = async (req: Request, res: Response, next: NextFunction) =
 
             return res.status(400).send(`Webhook Error: ${JSON.stringify(error) || 'Invalid signature'}`);
         }
-
-        console.log('event', event.type);
 
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object as Stripe.Checkout.Session;
