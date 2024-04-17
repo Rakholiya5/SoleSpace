@@ -5,14 +5,14 @@ import { Users } from '../db/models/users';
 import { Cart } from '../db/models/cart';
 import { Shoes } from '../db/models/shoes';
 import { IOrder, Order } from '../db/models/order';
-import mongoose, { FilterQuery } from 'mongoose';
+import { FilterQuery } from 'mongoose';
 import Stripe from 'stripe';
 import { config } from '../services/config';
 
 export const stripe = new Stripe(config.stripeSecret);
 
 export const createOrder = async (req: UserAuthenticatedRequest, res: Response, next: NextFunction) => {
-    let mongoSession: mongoose.mongo.ClientSession | null = null;
+    // let mongoSession: mongoose.mongo.ClientSession | null = null;
     try {
         const { line1, city, country, postalCode, state, phone, paymentMethod }: IOrder & { paymentMethod: PaymentMethod } = req.body;
 
@@ -29,7 +29,7 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
         let total = 0;
         const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
-        mongoSession = await mongoose.startSession();
+        // mongoSession = await mongoose.startSession();
 
         for (const item of cartItems) {
             const shoe = await Shoes.findById(item.shoeId);
@@ -44,7 +44,8 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
 
             details.quantity -= item.quantity;
 
-            await shoe.save({ session: mongoSession });
+            await shoe.save();
+            // await shoe.save({ session: mongoSession });
 
             const perItemTax = +((shoe.price * TAX_PERCENTAGE) / 100).toFixed(2) * 100;
 
@@ -81,11 +82,12 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
                 tax,
                 finalTotal,
                 paymentMethod,
-            },
-            { session: mongoSession }
+            }
+            // { session: mongoSession }
         );
 
-        await Cart.updateMany({ userId: user._id, orderId: null }, { orderId: order[0]._id }, { session: mongoSession });
+        // await Cart.updateMany({ userId: user._id, orderId: null }, { orderId: order[0]._id }, { session: mongoSession });
+        await Cart.updateMany({ userId: user._id, orderId: null }, { orderId: order._id });
 
         if (paymentMethod !== PaymentMethod.CASH_ON_DELIVERY) {
             if (!user.stripe_id) {
@@ -104,7 +106,8 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
 
                 user.stripe_id = customer.id;
 
-                await user.save({ session: mongoSession });
+                await user.save();
+                // await user.save({ session: mongoSession });
             }
 
             const customer = await stripe.customers.retrieve(user.stripe_id);
@@ -121,7 +124,8 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
                 success_url: `${config.clientUrl}/orders`,
                 cancel_url: `${config.clientUrl}/checkout/cancel`,
                 metadata: {
-                    orderId: order[0]._id.toString(),
+                    // orderId: order[0]._id.toString(),
+                    orderId: order._id.toString(),
                 },
                 currency: 'cad',
                 // payment_intent_data: {
@@ -134,10 +138,10 @@ export const createOrder = async (req: UserAuthenticatedRequest, res: Response, 
             return res.status(201).json({ url: session.url, success: true });
         }
 
-        await mongoSession.commitTransaction();
+        // await mongoSession.commitTransaction();
         return res.status(201).json({ success: true });
     } catch (error) {
-        if (mongoSession) await mongoSession.abortTransaction();
+        // if (mongoSession) await mongoSession.abortTransaction();
         return next(error);
     }
 };
