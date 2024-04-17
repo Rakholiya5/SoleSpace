@@ -9,6 +9,7 @@ export interface DetailsInterface {
     color: string;
     size: number;
     quantity: number;
+    imageUrl?: string;
     images: string[];
 }
 
@@ -23,6 +24,10 @@ const DetailsSchema = new Schema<IDetails>(
     },
     { timestamps: true, toJSON: { getters: true } }
 );
+
+DetailsSchema.virtual('imageUrl').get(function (this: IDetails) {
+    return this.images;
+});
 
 export interface ShoesInterface {
     name: string;
