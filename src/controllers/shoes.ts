@@ -218,7 +218,7 @@ export const updateShoeDetails = async (req: AdminAuthenticatedRequest, res: Res
         details.color = color;
         details.size = size;
         details.quantity = quantity;
-        details.images = [...new Set([...(details?.imageUrl ? details.imageUrl : []), ...images])];
+        details.images = [...new Set([...details.images, ...images])];
 
         await shoe.save();
 
