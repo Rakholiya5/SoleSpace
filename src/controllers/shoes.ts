@@ -244,7 +244,7 @@ export const deleteShoeDetails = async (req: AdminAuthenticatedRequest, res: Res
         shoe.details = shoe.details.filter((detail) => detail?._id?.toString() !== detailsId);
 
         for (const image of details.images) {
-            const imagePath = `public/shoes/${shoe.id}/${image}`;
+            const imagePath = `public/shoes/${image}`;
             if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
         }
 
@@ -273,7 +273,7 @@ export const deleteShoeImages = async (req: AdminAuthenticatedRequest, res: Resp
 
         for (const image of images) {
             const imagePath = `public/shoes/${image.replace(`${config.baseUrl}/shoes/`, '')}`;
-            if (fs.existsSync(image)) fs.unlinkSync(imagePath);
+            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
         }
 
         await shoe.save();
