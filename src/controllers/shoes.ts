@@ -8,6 +8,7 @@ import { Category } from '../db/models/category';
 import { FilterQuery } from 'mongoose';
 import { Feedback } from '../db/models/feedback';
 import { Users } from '../db/models/users';
+import { config } from '../services/config';
 
 export const addShoe = async (req: AdminAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
@@ -268,10 +269,10 @@ export const deleteShoeImages = async (req: AdminAuthenticatedRequest, res: Resp
 
         if (!details) throw new Error(messages.DETAILS_NOT_FOUND);
 
-        details.images = details.images.filter((image) => !images.includes(image));
+        details.images = details.images.filter((image) => !images.includes(`${config.baseUrl}/shoes/${image}`));
 
         for (const image of images) {
-            const imagePath = `public/shoes/${shoe.id}/${image}`;
+            const imagePath = `public/shoes/${image.replace(`${config.baseUrl}/shoes/`, '')}`;
             if (fs.existsSync(image)) fs.unlinkSync(imagePath);
         }
 

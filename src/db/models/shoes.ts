@@ -19,10 +19,14 @@ const DetailsSchema = new Schema<IDetails>(
         color: { type: String, required: true, set: setStringType },
         size: { type: Number, required: true },
         quantity: { type: Number, required: true },
-        images: { type: [String], default: [], get: (images: string[]) => images.map((image) => `${baseUrl}/shoes/${image}`) },
+        images: { type: [String], default: [] },
     },
     { timestamps: true, toJSON: { getters: true } }
 );
+
+DetailsSchema.virtual('imageUrls').get(function (this: IDetails) {
+    return this.images.map((image) => `${baseUrl}/shoes/${image}`);
+});
 
 export interface ShoesInterface {
     name: string;
