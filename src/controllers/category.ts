@@ -76,7 +76,7 @@ export const updateCategory = async (req: AdminAuthenticatedRequest, res: Respon
         fs.mkdirSync(folderPath, { recursive: true });
 
         if (file) {
-            if (category.image) fs.unlinkSync(`${folderPath}/${category.image}`);
+            if (category.image) if (fs.existsSync(`${folderPath}/${category.image}`)) fs.unlinkSync(`${folderPath}/${category.image}`);
             image = `${Date.now()}${path.extname(file.originalname)}`;
             fs.writeFileSync(`${folderPath}/${image}`, file.buffer);
         }

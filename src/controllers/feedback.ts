@@ -62,7 +62,7 @@ export const editFeedback = async (req: UserAuthenticatedRequest, res: Response,
         fs.mkdirSync(folderPath, { recursive: true });
 
         if (file) {
-            if (feedback.image) fs.unlinkSync(`${folderPath}/${feedback.image}`);
+            if (feedback.image) if (fs.existsSync(`${folderPath}/${feedback.image}`)) fs.unlinkSync(`${folderPath}/${feedback.image}`);
             image = `${Date.now()}${path.extname(file.originalname)}`;
             fs.writeFileSync(`${folderPath}/${image}`, file.buffer);
         }
