@@ -89,7 +89,7 @@ export const getMyCartsItems = async (req: UserAuthenticatedRequest, res: Respon
         const tax = +((total * TAX_PERCENTAGE) / 100).toFixed(2);
         const finalTotal = +(total + tax).toFixed(2);
 
-        return res.status(200).json({ cartItems, success: true, total, tax, finalTotal });
+        return res.status(200).json({ cartItems, success: true, total, tax, finalTotal, taxPercentage: TAX_PERCENTAGE });
     } catch (error) {
         return next(error);
     }
