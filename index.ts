@@ -22,6 +22,7 @@ mongoConnect();
 
 app.use('/shoes', express.static('./public/shoes'));
 app.use('/categories', express.static('./public/categories'));
+app.use('/feedbacks', express.static('./public/feedbacks'));
 
 app.use('/api', routes);
 app.use(customErrorRes);
