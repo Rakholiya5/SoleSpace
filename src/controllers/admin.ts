@@ -116,6 +116,10 @@ export const addUser = async (req: AdminAuthenticatedRequest, res: Response, nex
     try {
         const { line1, city, country, postalCode, state, age, email, name, password, phone }: usersInterface = req.body;
 
+        const exist = await Users.findOne({ email });
+
+        if (exist) throw new Error(messages.EMAIL_ALREADY_EXISTS);
+
         const user = await Users.create({
             line1,
             city,
